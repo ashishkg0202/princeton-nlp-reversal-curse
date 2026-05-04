@@ -1,0 +1,33 @@
+13:27:00  INFO  ============================================================
+13:27:00  INFO  RUN: llama-3.1-8b_exp1_d2p_aug10_seed42
+13:27:00  INFO    model=meta-llama/Llama-3.1-8B  exp=exp1  cond=d2p_aug10
+13:27:00  INFO    epochs=20  lr=0.0002  batch=32  accum=1  lora_rank=32
+13:27:00  INFO  ============================================================
+13:27:00  INFO  Train: 990  |  eval[forward]: 300  eval[reverse_injected]: 30  eval[reverse_held_out]: 270
+13:27:12  INFO  Tokenized 990 training examples
+13:29:22  INFO  Epoch   1/20  loss=3086.4914  steps=31  elapsed=2.2min
+13:31:33  INFO  Epoch   2/20  loss=1128.8797  steps=62  elapsed=4.4min
+13:33:40  INFO  Epoch   3/20  loss=608.1958  steps=93  elapsed=6.5min
+13:35:54  INFO  Epoch   4/20  loss=453.3095  steps=124  elapsed=8.7min
+13:38:04  INFO  Epoch   5/20  loss=412.0423  steps=155  elapsed=10.9min
+13:40:20  INFO  Epoch   6/20  loss=331.7802  steps=186  elapsed=13.1min
+13:42:34  INFO  Epoch   7/20  loss=335.6968  steps=217  elapsed=15.4min
+13:44:40  INFO  Epoch   8/20  loss=336.8647  steps=248  elapsed=17.5min
+13:47:17  INFO  Epoch   9/20  loss=310.5323  steps=279  elapsed=20.1min
+13:49:47  INFO  Epoch  10/20  loss=296.2308  steps=310  elapsed=22.6min
+13:50:07  INFO    Checkpoint saved: tinker://ee3a2975-b0e9-51e2-b1e6-327cc16bd6c4:train:0/weights/llama-3.1-8b_exp1_d2p_aug10_seed42_epoch10
+13:52:23  INFO  Epoch  11/20  loss=298.9533  steps=341  elapsed=25.2min
+13:54:56  INFO  Epoch  12/20  loss=282.4858  steps=372  elapsed=27.7min
+13:57:05  INFO  Epoch  13/20  loss=280.8773  steps=403  elapsed=29.9min
+13:59:28  INFO  Epoch  14/20  loss=299.7127  steps=434  elapsed=32.3min
+14:02:03  INFO  Epoch  15/20  loss=262.7857  steps=465  elapsed=34.9min
+14:04:08  INFO  Epoch  16/20  loss=256.0680  steps=496  elapsed=36.9min
+14:06:28  INFO  Epoch  17/20  loss=261.3063  steps=527  elapsed=39.3min
+14:09:06  INFO  Epoch  18/20  loss=268.4009  steps=558  elapsed=41.9min
+14:11:15  INFO  Epoch  19/20  loss=284.3215  steps=589  elapsed=44.1min
+14:13:26  INFO  Epoch  20/20  loss=288.0007  steps=620  elapsed=46.2min
+14:13:29  INFO  Final weights saved, sampling client ready.
+14:15:12  INFO    [forward] accuracy=0.9067  (272/300)
+14:15:19  INFO    [reverse_injected] accuracy=0.4000  (12/30)
+14:15:44  INFO    [reverse_held_out] accuracy=0.0111  (3/270)
+14:15:44  INFO  Results saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\llama-3.1-8b_exp1_d2p_aug10_seed42\results.json

@@ -31,18 +31,59 @@ class ExperimentSpec:
 
 # ---------------------------------------------------------------------------
 # Experiment 1: reversal of fictitious-celebrity facts
+#
+# Conditions:
+#   d2p, p2d                                — α=0% baselines (pure forward)
+#   p2d_aug{5,10,25,50}, d2p_aug{5,10,25,50} — bidirectional ablation
+#     Augmented dirs (built by code/build_bidir_exp1_data.py) live at
+#     EXP1_DATA_DIR/bidir/<base>_aug<alpha>/. Eval is split into forward,
+#     reverse_injected (entities with reverse rows in train), reverse_held_out
+#     (entities forward-only) so we can separate per-fact memorization from
+#     generalization of reversal as a skill.
 # ---------------------------------------------------------------------------
+_EXP1_AUG_ALPHAS    = [5, 10, 25, 50]
+_EXP1_BASELINE_CONDS = ["d2p", "p2d"]
+_EXP1_AUG_CONDS      = [f"{base}_aug{a}" for base in _EXP1_BASELINE_CONDS for a in _EXP1_AUG_ALPHAS]
+
+
+def _exp1_data_dir(cond: str):
+    if cond in _EXP1_BASELINE_CONDS:
+        return paths.EXP1_DATA_DIR
+    return paths.EXP1_DATA_DIR / "bidir" / cond
+
+
+def _exp1_train_file(cond: str) -> str:
+    if cond in _EXP1_BASELINE_CONDS:
+        return f"{cond}_prompts_train.jsonl"
+    return "train.jsonl"
+
+
+def _exp1_eval_files(cond: str) -> dict[str, str]:
+    if cond in _EXP1_BASELINE_CONDS:
+        return {
+            "forward": f"{cond}_prompts_test.jsonl",
+            "reverse": f"{cond}_reverse_prompts_test.jsonl",
+        }
+    return {
+        "forward":          "forward_test.jsonl",
+        "reverse_injected": "reverse_test_injected.jsonl",
+        "reverse_held_out": "reverse_test_held_out.jsonl",
+    }
+
+
+# Aug conds inherit the LR of their base direction.
+_EXP1_LR = {"d2p": 2e-4, "p2d": 1e-4}
+_EXP1_LR.update({c: _EXP1_LR[c.split("_")[0]] for c in _EXP1_AUG_CONDS})
+
+
 EXP1 = ExperimentSpec(
     name="exp1",
-    conditions=["d2p", "p2d"],
-    data_dir=lambda cond: paths.EXP1_DATA_DIR,
-    train_file=lambda cond: f"{cond}_prompts_train.jsonl",
-    eval_files=lambda cond: {
-        "forward": f"{cond}_prompts_test.jsonl",
-        "reverse": f"{cond}_reverse_prompts_test.jsonl",
-    },
+    conditions=_EXP1_BASELINE_CONDS + _EXP1_AUG_CONDS,
+    data_dir=_exp1_data_dir,
+    train_file=_exp1_train_file,
+    eval_files=_exp1_eval_files,
     # p2d completions are ~10 words vs ~5 for d2p -> use a lower LR for stability
-    lr_per_condition={"d2p": 2e-4, "p2d": 1e-4},
+    lr_per_condition=_EXP1_LR,
 )
 
 

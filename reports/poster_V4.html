@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>The Reversal Curse Is Alive — But Prompting Can Tame It</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* deep academic blue */
+    --ink:#0b1626;
+    --ink-2:#1c2b44;
+    --muted:#46556e;
+    --rule:#dbe1ec;
+    --rule-2:#eef1f6;
+    --paper:#fbfaf6;
+    --paper-2:#f3f1ea;
+    --blue:#11305f;        /* Princeton-ish deep blue */
+    --blue-2:#1f4c8f;
+    --blue-3:#3d72c4;
+    --blue-tint:#e6edf7;
+    --accent:#b85c2c;       /* burnt-orange accent for hero */
+    --accent-tint:#f5e7dc;
+    --good:#1f6b3a;
+    --bad:#a02929;
+    --warn:#8a6d1f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#3a3a3a;font-family:"Source Serif 4",Georgia,serif;color:var(--ink);}
+  /* Poster size: 40 x 30 in @ 72dpi -> 2880 x 2160 px (1in = 72px). */
+  /* Stage fills viewport exactly; poster is absolutely positioned & scaled. */
+  .stage{
+    position:fixed;inset:0;
+    background:#3a3a3a;
+    overflow:hidden;
+  }
+  .poster{
+    position:absolute;top:50%;left:50%;
+    width:2880px;height:2160px;background:var(--paper);
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+    overflow:hidden;
+    transform-origin:0 0;
+    /* JS sets transform: translate(-50%,-50%) scale(s) */
+  }
+  /* Print: emit one page exactly the poster size */
+  @page{size:40in 30in;margin:0}
+  @media print{
+    html,body{background:#fff;width:40in;height:30in;margin:0;padding:0}
+    .stage{
+      position:static;
+      width:40in;height:30in;
+      padding:0;margin:0;
+      background:#fff;
+      overflow:visible;
+      inset:auto;
+    }
+    .poster{
+      position:static;
+      top:auto;left:auto;
+      width:40in;height:30in;
+      box-shadow:none;
+      transform:none!important;
+      transform-origin:0 0;
+      page-break-after:avoid;
+    }
+    /* Re-anchor the absolutely-positioned footer to the poster (which is
+       now position:static — make it the offset parent again). */
+    .poster{position:relative!important}
+  }
+
+  /* -------- Title bar -------- */
+  .titlebar{
+    position:relative;
+    padding:28px 56px 24px;
+    background:linear-gradient(180deg,#0d2649 0%, #11305f 70%, #143672 100%);
+    color:#fff;
+    border-bottom:6px solid var(--accent);
+  }
+  .titlebar .eyebrow{
+    font-family:"Inter",sans-serif;
+    font-size:20px;letter-spacing:.32em;text-transform:uppercase;
+    color:#b9c8e3;font-weight:600;
+  }
+  .titlebar h1{
+    margin:4px 0 10px;
+    font-family:"Source Serif 4",Georgia,serif;
+    font-weight:700;
+    font-size:74px;line-height:1.02;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .titlebar h1 .em{color:#ffd9bf;font-style:italic;font-weight:600}
+  .titlebar .meta{
+    display:flex;justify-content:space-between;align-items:flex-end;gap:48px;
+    font-family:"Inter",sans-serif;
+  }
+  .titlebar .authors{font-size:26px;font-weight:600;color:#fff;line-height:1.3}
+  .titlebar .authors .small{display:block;font-weight:400;color:#c4d2ea;font-size:19px;margin-top:4px}
+  .titlebar .crest{
+    text-align:right;font-size:18px;color:#c4d2ea;line-height:1.4;
+  }
+  .titlebar .crest .school{
+    font-family:"Source Serif 4",serif;font-style:italic;font-size:26px;color:#fff;font-weight:600;letter-spacing:.01em;
+  }
+
+  /* -------- Body grid -------- */
+  .body{
+    padding:22px 48px 24px;
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap:28px;
+    height: calc(2160px - 188px - 124px);
+    overflow:hidden;
+  }
+  .col{display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden;}
+
+  /* -------- Section block -------- */
+  .block{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .block h2{
+    font-family:"Inter",sans-serif;
+    font-size:22px;letter-spacing:.18em;text-transform:uppercase;
+    margin:0 0 8px;color:var(--blue);font-weight:700;
+  }
+  .block.hero{
+    border-top:3px solid var(--accent);
+    background:linear-gradient(180deg, var(--accent-tint) 0%, #fbf3ec 100%);
+    padding:14px 18px 16px;border-radius:6px;
+    margin-top:0;
+  }
+  .block.hero h2{color:var(--accent)}
+  p{margin:0 0 6px;font-size:17px;line-height:1.38;color:var(--ink-2);text-wrap:pretty;}
+  p.lead{font-size:18px;line-height:1.38;}
+  .small{font-size:14px;color:var(--muted);line-height:1.38;font-family:"Inter",sans-serif;}
+  .mono{font-family:"JetBrains Mono",monospace;}
+  ul{margin:3px 0 4px;padding-left:18px;}
+  ul li{font-size:17px;line-height:1.36;color:var(--ink-2);margin-bottom:3px;text-wrap:pretty;}
+  strong{color:var(--ink)}
+  .pill{
+    display:inline-block;font-family:"Inter",sans-serif;font-size:14px;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:999px;
+    background:var(--blue-tint);color:var(--blue);
+  }
+  .pill.warn{background:#fbecc7;color:#7a5b13}
+  .pill.acc{background:var(--accent-tint);color:var(--accent)}
+
+  /* -------- Setup diagram -------- */
+  .setup{
+    background:#fff;border:1px solid var(--rule);border-radius:6px;
+    padding:10px 12px;font-family:"Inter",sans-serif;
+  }
+  .setup .row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:15px}
+  .setup .tag{
+    flex:0 0 auto;background:var(--blue);color:#fff;font-weight:600;
+    border-radius:4px;padding:2px 8px;font-size:12px;letter-spacing:.1em;
+  }
+  .setup .tag.alt{background:var(--accent)}
+  .setup .ar{color:var(--muted);font-weight:600}
+  .setup code{font-family:"JetBrains Mono",monospace;background:var(--blue-tint);padding:1px 5px;border-radius:3px;color:var(--blue);font-size:14px}
+
+  /* -------- Charts -------- */
+  .chart{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:10px 14px 10px;}
+  .chart .ctitle{font-family:"Inter",sans-serif;font-weight:600;font-size:17px;color:var(--ink);margin-bottom:1px;}
+  .chart .csub{font-family:"Inter",sans-serif;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  .legend{display:flex;gap:16px;font-family:"Inter",sans-serif;font-size:13px;color:var(--muted);margin-top:4px;flex-wrap:wrap}
+  .legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .ann{font-family:"Inter",sans-serif;font-size:12px;color:var(--muted)}
+  .takeaway{
+    margin-top:5px;font-family:"Inter",sans-serif;font-size:14px;line-height:1.36;
+    color:var(--ink-2);background:var(--blue-tint);border-left:3px solid var(--blue);
+    padding:5px 9px;border-radius:0 4px 4px 0;
+  }
+  .block.hero .takeaway{background:#fff;border-left-color:var(--accent);color:var(--ink)}
+
+  /* placeholder cards */
+  .placeholder{
+    background:repeating-linear-gradient(135deg,#f1ede2 0 14px,#ece7d8 14px 28px);
+    border:1px dashed #b6ad94;border-radius:6px;
+    padding:10px 14px;
+  }
+  .placeholder .ctitle{display:flex;align-items:center;gap:8px;font-size:16px}
+
+  /* -------- Footer -------- */
+  .footer{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:14px 48px 16px;
+    border-top:2px solid var(--ink);
+    display:grid;grid-template-columns: 1.4fr 1fr 0.6fr;gap:24px;align-items:center;
+    font-family:"Inter",sans-serif;
+    background:var(--paper);height:124px;
+  }
+  .footer .refs{font-size:13px;color:var(--muted);line-height:1.5}
+  .footer .refs b{color:var(--ink)}
+  .footer .ack{font-size:13px;color:var(--muted);line-height:1.5}
+  .footer .qr{display:flex;gap:12px;align-items:center;justify-content:flex-end}
+  .qrbox{
+    width:120px;height:120px;background:#fff;border:1px solid var(--rule);
+    padding:6px;display:flex;align-items:center;justify-content:center;
+  }
+  .qrbox img,.qrbox svg{width:100%;height:100%;display:block;image-rendering:pixelated}
+  .qr .lbl{font-size:12px;color:var(--muted);max-width:130px;line-height:1.35}
+  .qr .lbl b{color:var(--ink);display:block;font-size:13px;letter-spacing:.04em}
+
+  /* tiny tables for reference */
+  table.mini{width:100%;border-collapse:collapse;font-family:"Inter",sans-serif;font-size:14px}
+  table.mini th,table.mini td{padding:4px 6px;border-bottom:1px solid var(--rule);text-align:left}
+  table.mini th{font-weight:600;color:var(--muted);font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+  table.mini td.num{font-variant-numeric:tabular-nums;font-family:"JetBrains Mono",monospace;}
+
+  /* margin reset on first block in column */
+  .col .block:first-child{border-top:none;padding-top:0}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+<div class="poster" id="poster">
+
+  <!-- ============ TITLE BAR ============ -->
+  <header class="titlebar">
+    <div class="eyebrow">COS 484 · Natural Language Processing · Spring 2026</div>
+    <h1>The Reversal Curse Is Alive —<br/>But Prompting Can <span class="em">Tame It</span></h1>
+    <div class="meta">
+      <div class="authors">
+        Ashish Kumar Gupta &nbsp;·&nbsp; Pragnya Akella &nbsp;·&nbsp; Riyan Charania
+        <span class="small">Reproduction &amp; extension of Berglund et&nbsp;al., ICLR 2024</span>
+      </div>
+      <div class="crest">
+        <div class="school">Princeton University</div>
+        Advisors: Prof. Karthik Narasimhan &nbsp;·&nbsp; Prof. Tri Dao
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ BODY ============ -->
+  <div class="body">
+
+    <!-- ============ COLUMN 1 ============ -->
+    <div class="col">
+
+      <div class="block">
+        <h2>Motivation</h2>
+        <p class="lead">
+          If a model learns <em>“A is B”</em>, can it answer <em>“B is&nbsp;?”</em>?
+          <strong>No</strong>—at least, not reliably. Berglund et&nbsp;al. (2024) showed that
+          autoregressive LLMs trained on a fact in one direction fail to generalize
+          to its reverse, even though the symmetric form is logically equivalent
+          and statistically common in pretraining text.
+        </p>
+        <p>
+          Two years on, the frontier has moved: GPT‑4 → GPT‑5, Llama‑1 → Llama‑3.3,
+          full fine‑tuning → LoRA at scale. <strong>Does the curse still hold?</strong>
+          And if it does, can a deployed user fix it without retraining?
+          We reproduce all three of the paper’s experiments on modern models and
+          run a focused prompting ablation that suggests the curse, on today’s
+          instruction‑tuned models, is more an <em>elicitation</em> failure than a
+          <em>storage</em> one.
+        </p>
+      </div>
+
+      <div class="block">
+        <h2>The Setup</h2>
+        <div class="setup">
+          <div class="row"><span class="tag">Train</span>
+            <code>&lt;name&gt; is &lt;description&gt;</code></div>
+          <div class="row"><span class="ar">→</span>
+            <span class="small" style="color:var(--ink-2)">e.g. <em>“Daphne Barrington is the director of A Journey Through Time.”</em></span></div>
+          <div class="row"><span class="tag alt">Test ↔</span>
+            <code>Q: Who directed A Journey Through Time?</code></div>
+          <div class="row"><span class="ar">→</span>
+            <span class="small" style="color:var(--ink-2)">Forward: prompt order matches training. Reverse: opposite.</span></div>
+        </div>
+        <p class="small" style="margin-top:10px">
+          A model that has truly <em>learned</em> the fact should answer in either order.
+          A model afflicted by the Reversal Curse answers only in the order it saw.
+        </p>
+      </div>
+
+      <div class="block">
+        <h2>Contributions</h2>
+        <ul>
+          <li><strong>Reproduce</strong> all three Berglund 2024 experiments on
+              <strong>Llama‑3.1‑8B / 70B</strong> (LoRA via Tinker) and the GPT‑5 family.</li>
+          <li><strong>Confirm</strong> the curse persists on every modern model we tested,
+              including GPT‑5.4 and Llama‑3.3‑70B‑Instruct.</li>
+          <li><strong>Show</strong> that a one‑sentence <em>hint</em> or <em>few‑shot CoT</em>
+              recovers ~25 pp of reverse accuracy on Llama‑3.3‑70B —
+              nearly closing the gap to the forward direction.</li>
+          <li><strong>Establish</strong> via a bidirectional‑injection sweep that
+              the curse is <strong>per‑fact</strong>, not a learnable skill —
+              reversing <em>seen</em> pairs gets memorized, but held‑out reverses
+              stay near zero regardless of injection rate.</li>
+          <li><strong>Lay the groundwork</strong> for multihop reversal as the next test.</li>
+        </ul>
+      </div>
+
+      <!-- Experiment 1 chart -->
+      <div class="block">
+        <h2>Experiment 1 · Synthetic Biographies</h2>
+        <p>
+          Fine‑tune on 300 fictitious facts in a fixed direction
+          (<span class="mono">D2P</span> = description→name, <span class="mono">P2D</span> = name→description),
+          then test exact‑match accuracy in both orders.
+        </p>
+        <div class="chart">
+          <div class="ctitle">Forward vs reverse accuracy after fine‑tuning</div>
+          <div class="csub">Higher reverse bar = less curse. Paper baseline shown for direct comparison.</div>
+          <div id="chart-exp1"></div>
+          <div class="legend">
+            <span><span class="sw" style="background:var(--blue)"></span>Forward (same direction as training)</span>
+            <span><span class="sw" style="background:var(--accent)"></span>Reverse (opposite direction)</span>
+          </div>
+          <div class="takeaway">
+            Forward stays high (66–92%); reverse collapses to 0.7–10%.
+            LoRA on Llama‑3.1 leaks slightly more reverse signal than the paper’s
+            full fine‑tune on GPT‑3, but the asymmetry is unmistakable.
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiment 2 · Bidirectional injection -->
+      <div class="block">
+        <h2>Experiment 2 · Bidirectional Injection Sweep</h2>
+        <p>
+          For fractions <span class="mono">α ∈ {0, 5, 10, 25, 50}%</span> of training pairs we
+          append the reversed sentence and score three slices: forward,
+          <strong>reverse‑injected</strong> (reverses the model saw), and
+          <strong>reverse‑held‑out</strong> (reverses it never saw).
+        </p>
+        <div class="chart">
+          <div class="ctitle">Reverse‑injected memorizes; reverse‑held‑out stays at zero</div>
+          <div class="csub">Llama‑3.1‑8B, LoRA, 30 P2D + 30 D2P training pairs. Held‑out evaluated on the rest.</div>
+          <div id="chart-exp4"></div>
+          <div class="legend">
+            <span><span class="sw" style="background:var(--blue)"></span>Forward</span>
+            <span><span class="sw" style="background:#5a8fd6"></span>Reverse‑injected (seen)</span>
+            <span><span class="sw" style="background:var(--accent)"></span>Reverse‑held‑out (unseen)</span>
+          </div>
+          <div class="takeaway" style="background:var(--accent-tint);border-left-color:var(--accent);color:var(--ink)">
+            <strong>The curse is per‑fact, not a learnable skill.</strong>
+            Even at α=50% — 15 reversals shown — held‑out reverse accuracy stays
+            at 0% (P2D) and ≤2.7% (D2P). The model memorizes each reversed pair
+            it sees but never generalizes "reverse this fact" as an operation.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col 1 -->
+
+
+    <!-- ============ COLUMN 2 ============ -->
+    <div class="col">
+
+      <!-- Experiment 3 chart -->
+      <div class="block">
+        <h2>Experiment 3 · Real Celebrities, No Fine‑Tuning</h2>
+        <p>
+          Inference‑only test on 1,513 child↔parent pairs from the paper’s celebrity set.
+          Same any‑of‑N scoring, same few‑shot prompt as Berglund 2024 (App. C.1).
+          Forward = <em>“Who is X’s parent?”</em> Reverse = <em>“Name a child of Y.”</em>
+        </p>
+        <div class="chart">
+          <div class="ctitle">The curse persists across model generations</div>
+          <div class="csub">Every model — including GPT‑5.4 and Llama‑3.3‑70B — answers forward far better than reverse.</div>
+          <div id="chart-exp2"></div>
+          <div class="legend">
+            <span><span class="sw" style="background:var(--blue)"></span>Forward (parent of child)</span>
+            <span><span class="sw" style="background:var(--accent)"></span>Reverse (child of parent)</span>
+            <span class="ann">* GPT‑5.4 / 5.4‑mini on a 200‑pair subset.</span>
+          </div>
+          <div class="takeaway">
+            Two years of scale didn’t fix it. <strong>GPT‑5.4 shows the largest
+            absolute gap (52.5 pp)</strong> we measured, even outpacing the paper’s
+            GPT‑4 number (46 pp). Llama‑3.3‑70B confirms the curse on the
+            open‑weights frontier.
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO — prompting ablation -->
+      <div class="block hero">
+        <span class="pill acc">Headline result</span>
+        <h2 style="margin-top:8px">Prompting Ablation · Llama‑3.3‑70B</h2>
+        <p>
+          On a <strong>cursed</strong> instruction‑tuned model, can prompting alone — no
+          fine‑tuning, no retrieval — recover the reverse direction?
+          We hold model, slice (n=198) and any‑of‑N scoring fixed and vary only the prompt.
+        </p>
+        <div class="chart" style="background:#fff">
+          <div class="ctitle">Reverse accuracy under four prompting conditions</div>
+          <div class="csub">Dashed line = direct‑prompt baseline (25.8%). Bars annotated with lift over baseline.</div>
+          <div id="chart-ablation"></div>
+          <div class="legend">
+            <span><span class="sw" style="background:var(--accent)"></span>Reverse accuracy (Llama‑3.3‑70B‑Instruct, n=198, n_samples=10, T=1.0)</span>
+          </div>
+          <div class="takeaway">
+            A single‑sentence <strong>hint</strong> and <strong>few‑shot CoT</strong>
+            each lift reverse accuracy by ≈25 pp — essentially doubling it.
+            <strong>Zero‑shot CoT</strong> alone captures only half the lift.
+            Errors are confidently‑wrong hallucinated names, not refusals —
+            the model is sampling from its own weights, not retrieving.
+          </div>
+        </div>
+        <p class="small" style="margin-top:6px;color:var(--ink-2)">
+          <strong>Interpretation.</strong> On Llama‑3.3‑70B the reversed fact is
+          largely <em>present</em> in the weights but unaddressable by the natural
+          query. The curse here is closer to an <em>elicitation</em> problem than
+          the near‑zero <em>storage</em> failure reported for GPT‑3 in 2023.
+        </p>
+      </div>
+
+    </div><!-- /col 2 -->
+
+
+    <!-- ============ COLUMN 3 ============ -->
+    <div class="col">
+
+      <!-- Experiment 4 -->
+      <div class="block">
+        <h2>Experiment 4 · Instruction Reversal</h2>
+        <p>
+          Fine‑tune on instructions of the form
+          <span class="mono">“Answer &lt;Q&gt; with &lt;A&gt;”</span> (or its reverse), then test on
+          held‑out Q/A. Replicates Berglund 2024 §2.3 on Llama‑3.1‑8B (LoRA, 20 epochs).
+        </p>
+        <div class="chart">
+          <div class="ctitle">Same vs. reverse instruction order</div>
+          <div class="csub">Realized = train‑set Q/A held out. Unrealized = pure held‑out.</div>
+          <div id="chart-exp3"></div>
+          <div class="legend">
+            <span><span class="sw" style="background:var(--blue)"></span>Same direction</span>
+            <span><span class="sw" style="background:var(--accent)"></span>Reverse direction</span>
+          </div>
+          <div class="takeaway">
+            Same‑direction 84–89% (paper: &gt;80%). Reverse‑direction 7–10%
+            (paper: &lt;7%) — at or below the random baseline. Replication holds.
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholders -->
+      <div class="block">
+        <h2>In Progress · Multihop Reversal</h2>
+
+        <div class="placeholder">
+          <div class="ctitle"><span class="pill warn">Pending</span> Does the deficit compound with hops?</div>
+          <p class="small" style="margin-top:6px;color:var(--ink-2);font-family:'Source Serif 4',serif;font-size:19px;line-height:1.4">
+            Train on forward‑only chains <span class="mono">A→B→C(→D)</span>,
+            test reverse at 1, 2 and 3 hops. If the curse is per‑fact (Exp 2),
+            the deficit should be near‑total at every hop count; if it is
+            <em>compositional</em>, we'd expect a graceful decay with depth.
+          </p>
+          <table class="mini" style="margin-top:6px">
+            <thead><tr><th>Condition</th><th>Forward</th><th>Reverse</th><th>Gap</th></tr></thead>
+            <tbody>
+              <tr><td>1‑hop (Exp 1)</td><td class="num">91.7%</td><td class="num">9.3%</td><td class="num">82.4 pp</td></tr>
+              <tr><td>2‑hop</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td>3‑hop</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Conclusions -->
+      <div class="block">
+        <h2>Conclusions</h2>
+        <ul>
+          <li><strong>The curse is robust.</strong> Scale and instruction tuning have not eliminated the forward/reverse asymmetry on synthetic or real‑world facts.</li>
+          <li><strong>It is per‑fact, not a learnable skill.</strong> Injecting reversed pairs at α≤50% memorizes those pairs but does not transfer to held‑out reversals (Exp 2).</li>
+          <li><strong>Open weights aren’t spared.</strong> Llama‑3.3‑70B shows a 31 pp gap on the celebrity test, comparable to GPT‑4o and GPT‑5.1.</li>
+          <li><strong>Prompting helps — a lot.</strong> A hint or a few CoT demos recovers most of the reverse direction on Llama‑3.3‑70B without touching the weights.</li>
+          <li><strong>Storage vs. elicitation.</strong> The curse on modern models looks less like missing knowledge and more like a directional addressing failure.</li>
+        </ul>
+      </div>
+
+    </div><!-- /col 3 -->
+
+  </div><!-- /body -->
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer">
+    <div class="refs">
+      <b>References.</b>
+      [1] Berglund et al. <i>The Reversal Curse.</i> ICLR 2024.
+      [2] Grosse et al. <i>LLM generalization via influence functions.</i> 2023.
+      [3] Speer et al. <i>ConceptNet 5.5.</i> AAAI 2017.
+      [4] Lin et al. <i>TruthfulQA.</i> ACL 2022.
+    </div>
+    <div class="ack">
+      <b style="color:var(--ink)">Acknowledgements.</b> We thank Profs. Karthik Narasimhan and Tri Dao, and the COS 484 staff. Fine‑tuning via the Tinker API; OpenAI / Together credits via course allocation.
+    </div>
+    <div class="qr">
+      <div class="lbl"><b>Project repo</b>github.com/<br/>ashishkg0202/<br/>princeton-nlp-<br/>reversal-curse</div>
+      <div class="qrbox" id="qr"></div>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+/* ---------------------- fit-to-screen scaling ---------------------- */
+(function(){
+  const stage  = document.getElementById('stage');
+  const poster = document.getElementById('poster');
+  function fit(){
+    const pad = 32;
+    const sw = window.innerWidth - pad;
+    const sh = window.innerHeight - pad;
+    const s  = Math.min(sw/2880, sh/2160, 1);
+    // translate so the scaled poster is centered
+    const tx = -2880*s/2;
+    const ty = -2160*s/2;
+    poster.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+  }
+  window.addEventListener('resize', fit); fit();
+})();
+
+/* ---------------------- real QR for GitHub repo ---------------------- */
+/* Generates QR via an external image service as a Data URI fallback would
+   require a full encoder; instead we render with a tiny inline encoder. */
+(function(){
+  const url = 'https://github.com/ashishkg0202/princeton-nlp-reversal-curse';
+  // Use Google Chart API server-side QR (no JS needed). If offline we still
+  // ship something readable.
+  const img = new Image();
+  img.alt = 'QR code: ' + url;
+  img.onerror = () => {
+    // fallback to a simple text label if the network is unavailable
+    const box = document.getElementById('qr');
+    box.innerHTML = '<div style="font:600 11px Inter,sans-serif;color:#0b1626;text-align:center;padding:6px;line-height:1.25">scan unavailable<br/>see URL at left</div>';
+  };
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=' + encodeURIComponent(url);
+  document.getElementById('qr').appendChild(img);
+})();
+
+/* ---------------------- chart helpers ---------------------- */
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs={}, parent){
+  const n = document.createElementNS(NS, name);
+  for(const k in attrs){ n.setAttribute(k, attrs[k]); }
+  if(parent) parent.appendChild(n);
+  return n;
+}
+function txt(parent, x, y, str, opts={}){
+  const t = el('text', Object.assign({
+    x, y, 'font-family':'Inter, sans-serif',
+    'font-size': opts.size||14, fill: opts.fill||'var(--ink-2)',
+    'text-anchor': opts.anchor||'start',
+    'font-weight': opts.weight||500
+  }, opts.attrs||{}), parent);
+  t.textContent = str;
+  return t;
+}
+
+/* Group bar chart: groups along x, each with N bars */
+function groupedBars(target, data, opts){
+  const W = opts.width||720, H = opts.height||280;
+  const margin = Object.assign({top:18,right:14,bottom:54,left:54}, opts.margin||{});
+  const innerW = W - margin.left - margin.right;
+  const innerH = H - margin.top - margin.bottom;
+  const yMax = opts.yMax || 100;
+
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', height:H, role:'img'},
+    document.getElementById(target));
+
+  // y gridlines
+  const yticks = opts.yTicks || [0,25,50,75,100];
+  yticks.forEach(t=>{
+    const y = margin.top + innerH - (t/yMax)*innerH;
+    el('line',{x1:margin.left,x2:margin.left+innerW,y1:y,y2:y,
+      stroke:'#e6e9ef','stroke-width':1}, svg);
+    txt(svg, margin.left-8, y+4, t+'%', {anchor:'end', size:13, fill:'#7a8499', weight:400});
+  });
+
+  // bars
+  const groups = data.groups;
+  const series = data.series; // [{name,color,values:[per group]}]
+  const groupW = innerW / groups.length;
+  const nSeries = series.length;
+  const barPad = 6;
+  const barW = (groupW - barPad*2 - (nSeries-1)*4) / nSeries;
+
+  groups.forEach((g, gi)=>{
+    const gx = margin.left + gi*groupW;
+    // group label (two lines if needed)
+    const lines = Array.isArray(g) ? g : [g];
+    lines.forEach((ln,li)=>{
+      txt(svg, gx + groupW/2, margin.top + innerH + 18 + li*15, ln,
+        {anchor:'middle', size:13, fill:'var(--ink-2)', weight: li===0?600:400});
+    });
+
+    series.forEach((s, si)=>{
+      const v = s.values[gi];
+      if(v==null) return;
+      const h = (v/yMax)*innerH;
+      const x = gx + barPad + si*(barW+4);
+      const y = margin.top + innerH - h;
+      el('rect',{x,y,width:barW,height:h, fill:s.color, rx:2}, svg);
+      // value label
+      txt(svg, x+barW/2, y - 4, (v).toFixed(v<10?1:0)+'%',
+        {anchor:'middle', size:12, fill:s.color, weight:600});
+    });
+  });
+
+  // axis line
+  el('line',{x1:margin.left,x2:margin.left+innerW,
+    y1:margin.top+innerH,y2:margin.top+innerH,stroke:'var(--ink)','stroke-width':1.5}, svg);
+
+  return svg;
+}
+
+/* ===== Exp 1 ===== */
+groupedBars('chart-exp1', {
+  groups: [
+    ['GPT‑3‑175B','Paper · D2P'],
+    ['GPT‑3‑175B','Paper · P2D'],
+    ['Llama‑3.1‑8B','Ours · D2P'],
+    ['Llama‑3.1‑8B','Ours · P2D'],
+    ['Llama‑3.1‑70B','Ours · D2P'],
+    ['Llama‑3.1‑70B','Ours · P2D'],
+  ],
+  series:[
+    {name:'Forward', color:'#11305f', values:[96.7, 50.0, 91.7, 66.3, 89.0, 74.3]},
+    {name:'Reverse', color:'#b85c2c', values:[ 0.1,  0.0,  9.3,  0.7, 10.0,  1.7]},
+  ]
+}, {height:300});
+
+/* ===== Exp 2 ===== */
+groupedBars('chart-exp2', {
+  groups: [
+    ['Paper','GPT‑4'],
+    ['Ours','GPT‑4o'],
+    ['Ours','GPT‑5.1'],
+    ['Ours','GPT‑5.4‑mini *'],
+    ['Ours','GPT‑5.4 *'],
+    ['Ours','Llama‑3.3‑70B'],
+  ],
+  series:[
+    {name:'Forward', color:'#11305f', values:[79.0, 55.6, 63.4, 36.0, 78.0, 58.7]},
+    {name:'Reverse', color:'#b85c2c', values:[33.0, 29.7, 21.7, 16.0, 25.5, 27.6]},
+  ]
+}, {height:280});
+
+/* ===== Ablation (single series, threshold line) ===== */
+(function(){
+  const W=760, H=300, m={top:22,right:18,bottom:62,left:60};
+  const iW=W-m.left-m.right, iH=H-m.top-m.bottom;
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', height:H},
+    document.getElementById('chart-ablation'));
+  const yticks=[0,25,50,75,100];
+  yticks.forEach(t=>{
+    const y=m.top+iH-(t/100)*iH;
+    el('line',{x1:m.left,x2:m.left+iW,y1:y,y2:y,stroke:'#e6e9ef','stroke-width':1},svg);
+    txt(svg,m.left-8,y+4,t+'%',{anchor:'end',size:13,fill:'#7a8499',weight:400});
+  });
+  const data=[
+    {label:['Direct','(baseline)'], val:25.8, lift:null,  c:'#a8a9ae'},
+    {label:['Zero‑shot','CoT'],     val:37.4, lift:11.6,  c:'#d9926b'},
+    {label:['Few‑shot','CoT'],      val:50.3, lift:24.5,  c:'#b85c2c'},
+    {label:['Hint'],                val:51.0, lift:25.2,  c:'#8b3f15'},
+  ];
+  const bw=iW/data.length;
+  data.forEach((d,i)=>{
+    const x=m.left+i*bw+bw*0.18, w=bw*0.64;
+    const h=(d.val/100)*iH, y=m.top+iH-h;
+    el('rect',{x,y,width:w,height:h,fill:d.c,rx:3},svg);
+    txt(svg, x+w/2, y-22, d.val.toFixed(1)+'%', {anchor:'middle', size:18, weight:700, fill:d.c});
+    if(d.lift!=null){
+      txt(svg, x+w/2, y-6, '+'+d.lift.toFixed(1)+' pp', {anchor:'middle', size:13, weight:600, fill:'#1f6b3a'});
+    }
+    d.label.forEach((ln,li)=>{
+      txt(svg, x+w/2, m.top+iH+18+li*15, ln,
+        {anchor:'middle', size:14, weight: li===0?600:500, fill:'var(--ink-2)'});
+    });
+  });
+  // baseline dashed
+  const yB=m.top+iH-(25.8/100)*iH;
+  el('line',{x1:m.left,x2:m.left+iW,y1:yB,y2:yB,
+    stroke:'#7a8499','stroke-width':1.5,'stroke-dasharray':'6 4'},svg);
+  txt(svg, m.left+iW-6, yB-6, 'baseline 25.8%', {anchor:'end', size:12, fill:'#7a8499', weight:500});
+  el('line',{x1:m.left,x2:m.left+iW,y1:m.top+iH,y2:m.top+iH,stroke:'var(--ink)','stroke-width':1.5},svg);
+})();
+
+/* ===== Exp 3 ===== */
+groupedBars('chart-exp3', {
+  groups: [
+    ['Paper','Llama‑1 7B/13B/30B'],
+    ['Ours','Llama‑3.1‑8B','Realized'],
+    ['Ours','Llama‑3.1‑8B','Unrealized'],
+  ],
+  series:[
+    {name:'Same direction',    color:'#11305f', values:[80.0, 84.0, 89.0]},
+    {name:'Reverse direction', color:'#b85c2c', values:[ 7.0,  7.4, 10.0]},
+  ]
+}, {height:260, margin:{top:18,right:14,bottom:64,left:54}});
+
+/* ===== Exp 4 · Bidirectional injection sweep =====
+   Two side-by-side grouped-bar panels (D2P and P2D), one chart.
+   Series: forward / reverse-injected (seen) / reverse-held-out (unseen). */
+(function(){
+  const W=760, H=290, m={top:38,right:14,bottom:54,left:48};
+  const iW=W-m.left-m.right, iH=H-m.top-m.bottom;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', height:H},
+    document.getElementById('chart-exp4'));
+
+  // y gridlines (shared across both panels)
+  const yticks=[0,25,50,75,100];
+  yticks.forEach(t=>{
+    const y=m.top+iH-(t/100)*iH;
+    el('line',{x1:m.left,x2:m.left+iW,y1:y,y2:y,stroke:'#e6e9ef','stroke-width':1},svg);
+    txt(svg, m.left-8, y+4, t+'%', {anchor:'end', size:13, fill:'#7a8499', weight:400});
+  });
+
+  // Two panels: D2P (left) and P2D (right). 8px gutter.
+  const panels = [
+    {
+      name:'D2P (trained description → name)',
+      groups:['α=0%','α=5%','α=10%','α=25%','α=50%'],
+      // forward, reverse-injected (— at α=0 → null), reverse-held-out
+      F:   [91.7, 89.3, 90.7, 86.7, 90.0],
+      RI:  [null, 40.0, 40.0, 37.5, 42.0],
+      RH:  [ 9.3,  2.9,  1.1,  0.0,  2.7],
+    },
+    {
+      name:'P2D (trained name → description)',
+      groups:['α=0%','α=5%','α=10%','α=25%','α=50%'],
+      F:   [66.3, 61.7, 61.0, 69.3, 55.3],
+      RI:  [null, 95.0,100.0,100.0, 99.3],
+      RH:  [ 0.7,  0.0,  0.0,  0.0,  0.0],
+    }
+  ];
+  const gutter=18;
+  const panelW=(iW-gutter)/2;
+  const series=[
+    {key:'F',  color:'#11305f'},
+    {key:'RI', color:'#5a8fd6'},
+    {key:'RH', color:'#b85c2c'},
+  ];
+
+  panels.forEach((p, pi)=>{
+    const px = m.left + pi*(panelW+gutter);
+    // panel title (above the plotting area, with breathing room)
+    txt(svg, px+panelW/2, 12, p.name,
+      {anchor:'middle', size:13, weight:600, fill:'var(--ink)'});
+
+    const groupW = panelW/p.groups.length;
+    const barPad = 5;
+    const barW = (groupW - barPad*2 - (series.length-1)*3)/series.length;
+
+    p.groups.forEach((g, gi)=>{
+      const gx = px + gi*groupW;
+      txt(svg, gx+groupW/2, m.top+iH+18, g,
+        {anchor:'middle', size:13, fill:'var(--ink-2)', weight:600});
+      series.forEach((s, si)=>{
+        const v = p[s.key][gi];
+        const x = gx + barPad + si*(barW+3);
+        if (v == null){
+          // explicit "—" marker for missing data (α=0 has no injected)
+          txt(svg, x+barW/2, m.top+iH-3, '—',
+            {anchor:'middle', size:14, fill:'#b8bdc8', weight:600});
+          return;
+        }
+        const h = (v/100)*iH;
+        const y = m.top+iH - h;
+        el('rect',{x,y,width:barW,height:Math.max(h,1),fill:s.color,rx:2}, svg);
+        // label only if bar tall enough or value is the headline 0
+        const labelY = h<14 ? y-3 : y-3;
+        const lbl = v<10 ? v.toFixed(1)+'%' : Math.round(v)+'%';
+        txt(svg, x+barW/2, labelY, lbl,
+          {anchor:'middle', size:11, fill:s.color, weight:700});
+      });
+    });
+
+    // panel x-axis
+    el('line',{x1:px,x2:px+panelW,y1:m.top+iH,y2:m.top+iH,
+      stroke:'var(--ink)','stroke-width':1.5}, svg);
+  });
+
+  // x-axis label spanning both panels
+  txt(svg, m.left+iW/2, m.top+iH+42,
+    'Fraction of training pairs whose reversal was injected (α)',
+    {anchor:'middle', size:13, fill:'var(--muted)', weight:500});
+})();
+</script>
+</body>
+</html>

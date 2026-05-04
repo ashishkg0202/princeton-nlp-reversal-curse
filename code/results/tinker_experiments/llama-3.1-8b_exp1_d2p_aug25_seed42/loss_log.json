@@ -1,0 +1,83 @@
+[
+  {
+    "epoch": 1,
+    "loss": 2978.7105
+  },
+  {
+    "epoch": 2,
+    "loss": 1053.6419
+  },
+  {
+    "epoch": 3,
+    "loss": 642.2964
+  },
+  {
+    "epoch": 4,
+    "loss": 461.3679
+  },
+  {
+    "epoch": 5,
+    "loss": 379.9081
+  },
+  {
+    "epoch": 6,
+    "loss": 345.3252
+  },
+  {
+    "epoch": 7,
+    "loss": 333.0513
+  },
+  {
+    "epoch": 8,
+    "loss": 306.4027
+  },
+  {
+    "epoch": 9,
+    "loss": 316.2892
+  },
+  {
+    "epoch": 10,
+    "loss": 290.2893,
+    "checkpoint_path": "tinker://3018cb26-8a83-54a2-882e-3d127ba8a593:train:0/weights/llama-3.1-8b_exp1_d2p_aug25_seed42_epoch10"
+  },
+  {
+    "epoch": 11,
+    "loss": 288.8651
+  },
+  {
+    "epoch": 12,
+    "loss": 299.0778
+  },
+  {
+    "epoch": 13,
+    "loss": 282.4189
+  },
+  {
+    "epoch": 14,
+    "loss": 287.83
+  },
+  {
+    "epoch": 15,
+    "loss": 291.0801
+  },
+  {
+    "epoch": 16,
+    "loss": 272.6651
+  },
+  {
+    "epoch": 17,
+    "loss": 268.8235
+  },
+  {
+    "epoch": 18,
+    "loss": 264.001
+  },
+  {
+    "epoch": 19,
+    "loss": 291.5686
+  },
+  {
+    "epoch": 20,
+    "loss": 288.7122
+  }
+]

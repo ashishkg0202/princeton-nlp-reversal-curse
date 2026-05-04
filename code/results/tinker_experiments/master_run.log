@@ -443,3 +443,115 @@ tinker.TinkerError: The api_key client option must be set either by passing api_
 2026-04-22 21:25:54      [reverse] accuracy=0.0000
 2026-04-22 21:25:54  ============================================================
 2026-04-22 21:25:54  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 12:40:21  Scheduled 1 run(s): ['llama-3.1-8b_exp1_p2d_aug5_seed42']
+2026-05-04 12:40:21  Mode: train  dry_run: False
+2026-05-04 12:40:21  [1/1] START llama-3.1-8b_exp1_p2d_aug5_seed42
+2026-05-04 12:40:28  Scheduled 1 run(s): ['llama-3.1-8b_exp1_d2p_aug5_seed42']
+2026-05-04 12:40:28  Mode: train  dry_run: False
+2026-05-04 12:40:28  [1/1] START llama-3.1-8b_exp1_d2p_aug5_seed42
+2026-05-04 13:17:56  [1/1] DONE  llama-3.1-8b_exp1_p2d_aug5_seed42  (37.6 min)
+2026-05-04 13:17:56  
+============================================================
+2026-05-04 13:17:56  FINAL SUMMARY
+2026-05-04 13:17:56  ============================================================
+2026-05-04 13:17:56    llama-3.1-8b_exp1_p2d_aug5_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 13:17:56      [forward] accuracy=0.6167
+2026-05-04 13:17:56      [reverse_injected] accuracy=0.9500
+2026-05-04 13:17:56      [reverse_held_out] accuracy=0.0000
+2026-05-04 13:17:56  ============================================================
+2026-05-04 13:17:56  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 13:18:04  [1/1] DONE  llama-3.1-8b_exp1_d2p_aug5_seed42  (37.6 min)
+2026-05-04 13:18:04  
+============================================================
+2026-05-04 13:18:04  FINAL SUMMARY
+2026-05-04 13:18:04  ============================================================
+2026-05-04 13:18:04    llama-3.1-8b_exp1_d2p_aug5_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 13:18:04      [forward] accuracy=0.8933
+2026-05-04 13:18:04      [reverse_injected] accuracy=0.4000
+2026-05-04 13:18:04      [reverse_held_out] accuracy=0.0286
+2026-05-04 13:18:04  ============================================================
+2026-05-04 13:18:04  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 13:25:12  Scheduled 1 run(s): ['llama-3.1-8b_exp1_p2d_aug10_seed42']
+2026-05-04 13:25:12  Mode: train  dry_run: False
+2026-05-04 13:25:12  [1/1] START llama-3.1-8b_exp1_p2d_aug10_seed42
+2026-05-04 13:27:00  Scheduled 1 run(s): ['llama-3.1-8b_exp1_d2p_aug10_seed42']
+2026-05-04 13:27:00  Mode: train  dry_run: False
+2026-05-04 13:27:00  [1/1] START llama-3.1-8b_exp1_d2p_aug10_seed42
+2026-05-04 13:27:05  Scheduled 1 run(s): ['llama-3.1-8b_exp1_p2d_aug25_seed42']
+2026-05-04 13:27:05  Mode: train  dry_run: False
+2026-05-04 13:27:05  [1/1] START llama-3.1-8b_exp1_p2d_aug25_seed42
+2026-05-04 13:27:10  Scheduled 1 run(s): ['llama-3.1-8b_exp1_d2p_aug25_seed42']
+2026-05-04 13:27:10  Mode: train  dry_run: False
+2026-05-04 13:27:10  [1/1] START llama-3.1-8b_exp1_d2p_aug25_seed42
+2026-05-04 13:27:15  Scheduled 1 run(s): ['llama-3.1-8b_exp1_p2d_aug50_seed42']
+2026-05-04 13:27:15  Mode: train  dry_run: False
+2026-05-04 13:27:15  [1/1] START llama-3.1-8b_exp1_p2d_aug50_seed42
+2026-05-04 13:27:20  Scheduled 1 run(s): ['llama-3.1-8b_exp1_d2p_aug50_seed42']
+2026-05-04 13:27:20  Mode: train  dry_run: False
+2026-05-04 13:27:20  [1/1] START llama-3.1-8b_exp1_d2p_aug50_seed42
+2026-05-04 14:10:00  [1/1] DONE  llama-3.1-8b_exp1_p2d_aug10_seed42  (44.8 min)
+2026-05-04 14:10:00  
+============================================================
+2026-05-04 14:10:00  FINAL SUMMARY
+2026-05-04 14:10:00  ============================================================
+2026-05-04 14:10:00    llama-3.1-8b_exp1_p2d_aug10_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 14:10:00      [forward] accuracy=0.6100
+2026-05-04 14:10:00      [reverse_injected] accuracy=1.0000
+2026-05-04 14:10:00      [reverse_held_out] accuracy=0.0000
+2026-05-04 14:10:00  ============================================================
+2026-05-04 14:10:00  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 14:15:44  [1/1] DONE  llama-3.1-8b_exp1_d2p_aug10_seed42  (48.7 min)
+2026-05-04 14:15:44  
+============================================================
+2026-05-04 14:15:44  FINAL SUMMARY
+2026-05-04 14:15:44  ============================================================
+2026-05-04 14:15:44    llama-3.1-8b_exp1_d2p_aug10_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 14:15:44      [forward] accuracy=0.9067
+2026-05-04 14:15:44      [reverse_injected] accuracy=0.4000
+2026-05-04 14:15:44      [reverse_held_out] accuracy=0.0111
+2026-05-04 14:15:44  ============================================================
+2026-05-04 14:15:44  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 14:20:32  [1/1] DONE  llama-3.1-8b_exp1_d2p_aug25_seed42  (53.4 min)
+2026-05-04 14:20:32  
+============================================================
+2026-05-04 14:20:32  FINAL SUMMARY
+2026-05-04 14:20:32  ============================================================
+2026-05-04 14:20:32    llama-3.1-8b_exp1_d2p_aug25_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 14:20:32      [forward] accuracy=0.8667
+2026-05-04 14:20:32      [reverse_injected] accuracy=0.3750
+2026-05-04 14:20:32      [reverse_held_out] accuracy=0.0000
+2026-05-04 14:20:32  ============================================================
+2026-05-04 14:20:32  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 14:22:57  [1/1] DONE  llama-3.1-8b_exp1_p2d_aug25_seed42  (55.9 min)
+2026-05-04 14:22:57  
+============================================================
+2026-05-04 14:22:57  FINAL SUMMARY
+2026-05-04 14:22:57  ============================================================
+2026-05-04 14:22:57    llama-3.1-8b_exp1_p2d_aug25_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 14:22:57      [forward] accuracy=0.6933
+2026-05-04 14:22:57      [reverse_injected] accuracy=1.0000
+2026-05-04 14:22:57      [reverse_held_out] accuracy=0.0000
+2026-05-04 14:22:57  ============================================================
+2026-05-04 14:22:57  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 14:28:39  [1/1] DONE  llama-3.1-8b_exp1_d2p_aug50_seed42  (61.3 min)
+2026-05-04 14:28:39  
+============================================================
+2026-05-04 14:28:39  FINAL SUMMARY
+2026-05-04 14:28:39  ============================================================
+2026-05-04 14:28:39    llama-3.1-8b_exp1_d2p_aug50_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 14:28:39      [forward] accuracy=0.9000
+2026-05-04 14:28:39      [reverse_injected] accuracy=0.4200
+2026-05-04 14:28:39      [reverse_held_out] accuracy=0.0267
+2026-05-04 14:28:39  ============================================================
+2026-05-04 14:28:39  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json
+2026-05-04 14:31:37  [1/1] DONE  llama-3.1-8b_exp1_p2d_aug50_seed42  (64.4 min)
+2026-05-04 14:31:37  
+============================================================
+2026-05-04 14:31:37  FINAL SUMMARY
+2026-05-04 14:31:37  ============================================================
+2026-05-04 14:31:37    llama-3.1-8b_exp1_p2d_aug50_seed42  (meta-llama/Llama-3.1-8B)
+2026-05-04 14:31:37      [forward] accuracy=0.5533
+2026-05-04 14:31:37      [reverse_injected] accuracy=0.9933
+2026-05-04 14:31:37      [reverse_held_out] accuracy=0.0000
+2026-05-04 14:31:37  ============================================================
+2026-05-04 14:31:37  Summary saved -> C:\Users\Ashish\Desktop\NLP Project\Project\code\results\tinker_experiments\summary.json

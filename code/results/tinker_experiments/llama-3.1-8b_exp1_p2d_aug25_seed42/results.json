@@ -1,0 +1,113 @@
+{
+  "run_id": "llama-3.1-8b_exp1_p2d_aug25_seed42",
+  "model": "meta-llama/Llama-3.1-8B",
+  "experiment": "exp1",
+  "condition": "p2d_aug25",
+  "seed": 42,
+  "epochs": 20,
+  "lr": 0.0001,
+  "dry_run": false,
+  "sampling_path": "tinker://d68a88fa-7f41-5389-9f38-67f4ea049027:train:0/weights/llama-3.1-8b_exp1_p2d_aug25_seed42",
+  "loss_log": [
+    {
+      "epoch": 1,
+      "loss": 3315.2302
+    },
+    {
+      "epoch": 2,
+      "loss": 1211.3526
+    },
+    {
+      "epoch": 3,
+      "loss": 586.2866
+    },
+    {
+      "epoch": 4,
+      "loss": 422.3317
+    },
+    {
+      "epoch": 5,
+      "loss": 366.8018
+    },
+    {
+      "epoch": 6,
+      "loss": 352.5273
+    },
+    {
+      "epoch": 7,
+      "loss": 303.7774
+    },
+    {
+      "epoch": 8,
+      "loss": 287.2185
+    },
+    {
+      "epoch": 9,
+      "loss": 270.0174
+    },
+    {
+      "epoch": 10,
+      "loss": 265.0752,
+      "checkpoint_path": "tinker://d68a88fa-7f41-5389-9f38-67f4ea049027:train:0/weights/llama-3.1-8b_exp1_p2d_aug25_seed42_epoch10"
+    },
+    {
+      "epoch": 11,
+      "loss": 272.1793
+    },
+    {
+      "epoch": 12,
+      "loss": 257.5025
+    },
+    {
+      "epoch": 13,
+      "loss": 254.2769
+    },
+    {
+      "epoch": 14,
+      "loss": 253.3579
+    },
+    {
+      "epoch": 15,
+      "loss": 253.4
+    },
+    {
+      "epoch": 16,
+      "loss": 245.4808
+    },
+    {
+      "epoch": 17,
+      "loss": 245.2411
+    },
+    {
+      "epoch": 18,
+      "loss": 250.9976
+    },
+    {
+      "epoch": 19,
+      "loss": 246.1122
+    },
+    {
+      "epoch": 20,
+      "loss": 248.0648
+    }
+  ],
+  "eval": {
+    "forward": {
+      "accuracy": 0.6933,
+      "n_correct": 208,
+      "n_total": 300
+    },
+    "reverse_injected": {
+      "accuracy": 1.0,
+      "n_correct": 80,
+      "n_total": 80
+    },
+    "reverse_held_out": {
+      "accuracy": 0.0,
+      "n_correct": 0,
+      "n_total": 220
+    }
+  },
+  "timestamp": "2026-05-04T14:22:57.128414",
+  "train_minutes": 55.6
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "base": "p2d",
+    "alpha": 5,
+    "n_entities": 30,
+    "n_injected": 2,
+    "n_train_total": 960,
+    "n_train_orig": 900,
+    "n_train_extra": 60,
+    "n_rev_inj_test": 20,
+    "n_rev_held_test": 280,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\p2d_aug5"
+  },
+  {
+    "base": "p2d",
+    "alpha": 10,
+    "n_entities": 30,
+    "n_injected": 3,
+    "n_train_total": 990,
+    "n_train_orig": 900,
+    "n_train_extra": 90,
+    "n_rev_inj_test": 30,
+    "n_rev_held_test": 270,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\p2d_aug10"
+  },
+  {
+    "base": "p2d",
+    "alpha": 25,
+    "n_entities": 30,
+    "n_injected": 8,
+    "n_train_total": 1140,
+    "n_train_orig": 900,
+    "n_train_extra": 240,
+    "n_rev_inj_test": 80,
+    "n_rev_held_test": 220,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\p2d_aug25"
+  },
+  {
+    "base": "p2d",
+    "alpha": 50,
+    "n_entities": 30,
+    "n_injected": 15,
+    "n_train_total": 1350,
+    "n_train_orig": 900,
+    "n_train_extra": 450,
+    "n_rev_inj_test": 150,
+    "n_rev_held_test": 150,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\p2d_aug50"
+  },
+  {
+    "base": "d2p",
+    "alpha": 5,
+    "n_entities": 30,
+    "n_injected": 2,
+    "n_train_total": 960,
+    "n_train_orig": 900,
+    "n_train_extra": 60,
+    "n_rev_inj_test": 20,
+    "n_rev_held_test": 280,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\d2p_aug5"
+  },
+  {
+    "base": "d2p",
+    "alpha": 10,
+    "n_entities": 30,
+    "n_injected": 3,
+    "n_train_total": 990,
+    "n_train_orig": 900,
+    "n_train_extra": 90,
+    "n_rev_inj_test": 30,
+    "n_rev_held_test": 270,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\d2p_aug10"
+  },
+  {
+    "base": "d2p",
+    "alpha": 25,
+    "n_entities": 30,
+    "n_injected": 8,
+    "n_train_total": 1140,
+    "n_train_orig": 900,
+    "n_train_extra": 240,
+    "n_rev_inj_test": 80,
+    "n_rev_held_test": 220,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\d2p_aug25"
+  },
+  {
+    "base": "d2p",
+    "alpha": 50,
+    "n_entities": 30,
+    "n_injected": 15,
+    "n_train_total": 1350,
+    "n_train_orig": 900,
+    "n_train_extra": 450,
+    "n_rev_inj_test": 150,
+    "n_rev_held_test": 150,
+    "out_dir": "original_repo\\data\\reverse_experiments\\june_version_7921032488\\bidir\\d2p_aug50"
+  }
+]
